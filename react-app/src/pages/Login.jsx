@@ -5,11 +5,12 @@ import { useState } from "react";
 import axios from "axios";
 import API_URL from "../constants";
 import styles from "../styles/login.module.css";
-function Login() {
-    const navigate = useNavigate()
 
-    const [username, setusername] = useState('');
-    const [password, setpassword] = useState('');
+function Login() {
+    const navigate = useNavigate();
+
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
 
     const handleApi = () => {
         const url = API_URL + '/login';
@@ -40,19 +41,15 @@ function Login() {
                 USERNAME
                 <div className={styles.inputbox}>
                 <input className="form-control" type="text" value={username}
-                    onChange={(e) => {
-                        setusername(e.target.value)
-                    }} />
+                    onChange={(e) => setUsername(e.target.value)} />
                 </div>
                 <br></br>
                 PASSWORD
                 <input className="form-control" type="text" value={password}
-                    onChange={(e) => {
-                        setpassword(e.target.value)
-                    }} />
+                    onChange={(e) => setPassword(e.target.value)} />
                 <br></br>
                 <button className={styles.btn} onClick={handleApi}> LOGIN </button>
-                <Link to="/signup" className={styles.btn} > SIGN UP </Link>
+                <Link to="/signup" className={styles.btn}> SIGN UP </Link>
             </div>
         </div>
     )

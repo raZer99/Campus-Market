@@ -3,6 +3,7 @@ import Header from "./Header";
 import { useState } from "react";
 import axios from "axios";
 import API_URL from "../constants";
+import bcrypt from "bcryptjs";
 
 function Signup() {
   const [username, setusername] = useState("");
@@ -10,9 +11,12 @@ function Signup() {
   const [email, setemail] = useState("");
   const [mobile, setmobile] = useState("");
 
-  const handleApi = () => {
+  const handleApi = async () => {
     const url = API_URL + "/signup";
-    const data = { username, password, mobile, email };
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    const data = { username, password: hashedPassword, mobile, email };
+    
     axios
       .post(url, data)
       .then((res) => {
@@ -24,6 +28,7 @@ function Signup() {
         alert("SERVER ERR");
       });
   };
+
   return (
     <div>
       <Header />
