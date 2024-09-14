@@ -2,79 +2,106 @@ const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
-const Users = mongoose.model('Users', {
-    username: String,
+// Define the User schema with unique constraints
+const userSchema = new mongoose.Schema({
+    username: { type: String, unique: true, required: true },
     mobile: String,
-    email: String,
-    password: String,
+    email: { type: String, unique: true, required: true },
+    password: { type: String, required: true },
     likedProducts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Products' }]
 });
 
+const Users = mongoose.model('Users', userSchema);
+
+// Handler to check username availability
+module.exports.checkUsernameAvailability = async (req, res) => {
+    const { username } = req.params;
+
+    try {
+        const user = await Users.findOne({ username });
+        if (user) {
+            return res.send({ userExists: true });
+        }
+        res.send({ userExists: false });
+    } catch (error) {
+        res.status(500).send({ message: 'Server error' });
+    }
+};
+
 module.exports.likeProducts = (req, res) => {
-    let productId = req.body.productId;
-    let userId = req.body.userId;
+    const { productId, userId } = req.body;
 
     Users.updateOne({ _id: userId }, { $addToSet: { likedProducts: productId } })
-        .then(() => {
-            res.send({ message: 'liked success.' });
-        })
-        .catch(() => {
-            res.send({ message: 'server err' });
-        });
+        .then(() => res.send({ message: 'Liked success.' }))
+        .catch(() => res.status(500).send({ message: 'Server error' }));
 };
 
 module.exports.signup = async (req, res) => {
     const { username, password, email, mobile } = req.body;
-    
+
+    // Validate email
+    if (!email.endsWith('@bmsit.in')) {
+        return res.status(400).send({ message: 'Email must end with @bmsit.in' });
+    }
+
     try {
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
+        // Check if username or email already exists
+        const existingUser = await Users.findOne({ $or: [{ username }, { email }] });
+        if (existingUser) {
+            return res.status(400).send({ message: 'Username or email already registered' });
+        }
+
+        // Hash the password before saving
+        const hashedPassword = await bcrypt.hash(password, 10);
+
         const user = new Users({ username, password: hashedPassword, email, mobile });
-        
         await user.save();
-        res.send({ message: 'saved success.' });
+        res.send({ message: 'Signup successful.' });
     } catch (error) {
-        res.send({ message: 'server err' });
+        res.status(500).send({ message: 'Server error' });
     }
 };
 
 module.exports.myProfileById = (req, res) => {
-    let uid = req.params.userId;
+    const uid = req.params.userId;
 
     Users.findOne({ _id: uid })
         .then((result) => {
-            res.send({
-                message: 'success.',
-                user: {
-                    email: result.email,
-                    mobile: result.mobile,
-                    username: result.username
-                }
-            });
+            if (result) {
+                res.send({
+                    message: 'Success.',
+                    user: {
+                        email: result.email,
+                        mobile: result.mobile,
+                        username: result.username
+                    }
+                });
+            } else {
+                res.status(404).send({ message: 'User not found.' });
+            }
         })
-        .catch(() => {
-            res.send({ message: 'server err' });
-        });
-
-    return;
+        .catch(() => res.status(500).send({ message: 'Server error' }));
 };
 
 module.exports.getUserById = (req, res) => {
     const _userId = req.params.uId;
+
     Users.findOne({ _id: _userId })
         .then((result) => {
-            res.send({
-                message: 'success.',
-                user: {
-                    email: result.email,
-                    mobile: result.mobile,
-                    username: result.username
-                }
-            });
+            if (result) {
+                res.send({
+                    message: 'Success.',
+                    user: {
+                        email: result.email,
+                        mobile: result.mobile,
+                        username: result.username
+                    }
+                });
+            } else {
+                res.status(404).send({ message: 'User not found.' });
+            }
         })
-        .catch(() => {
-            res.send({ message: 'server err' });
-        });
+        .catch(() => res.status(500).send({ message: 'Server error' }));
 };
 
 module.exports.login = async (req, res) => {
@@ -83,27 +110,30 @@ module.exports.login = async (req, res) => {
     try {
         const user = await Users.findOne({ username });
         if (!user) {
-            return res.status(400).send({ message: 'user not found.' });
+            return res.status(400).send({ message: 'User not found.' });
         }
 
+        // Compare the provided password with the hashed password
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return res.status(400).send({ message: 'password wrong.' });
+            return res.status(400).send({ message: 'Incorrect password.' });
         }
 
         const token = jwt.sign({ data: user }, 'MYKEY', { expiresIn: '1h' });
-        res.send({ message: 'find success.', token, userId: user._id });
+        res.send({ message: 'Login successful.', token, userId: user._id });
     } catch (error) {
-        res.send({ message: 'server err' });
+        res.status(500).send({ message: 'Server error' });
     }
 };
 
 module.exports.likedProducts = (req, res) => {
     Users.findOne({ _id: req.body.userId }).populate('likedProducts')
         .then((result) => {
-            res.send({ message: 'success', products: result.likedProducts });
+            if (result) {
+                res.send({ message: 'Success', products: result.likedProducts });
+            } else {
+                res.status(404).send({ message: 'User not found.' });
+            }
         })
-        .catch((err) => {
-            res.send({ message: 'server err' });
-        });
+        .catch(() => res.status(500).send({ message: 'Server error' }));
 };
