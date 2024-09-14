@@ -6,11 +6,9 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const productController = require('./controllers/productController');
 const userController = require('./controllers/userController');
+require('dotenv').config(); // Add this line to load environment variables
 
 const app = express();
-
-
-
 
 // Multer setup for file uploads
 const storage = multer.diskStorage({
@@ -31,7 +29,10 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 // Connect to MongoDB
-mongoose.connect('mongodb://localhost:27017/your-database-name', { useNewUrlParser: true, useUnifiedTopology: true })
+const mongoURI = `mongodb+srv://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@cluster0.ipzfb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
+
+
+mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('MongoDB connected'))
     .catch(err => console.error('MongoDB connection error:', err));
 
@@ -50,7 +51,6 @@ app.post('/my-products', productController.myProducts);
 app.post('/signup', userController.signup);
 app.get('/my-profile/:userId', userController.myProfileById);
 app.get('/get-user/:uId', userController.getUserById);
-// Add this line to index.js
 app.get('/get-user-by-username/:username', userController.checkUsernameAvailability);
 app.post('/login', userController.login);
 
