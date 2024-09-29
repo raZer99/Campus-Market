@@ -1,55 +1,47 @@
-.header {}
-
 .headerContainer {
-    padding: 20px 20px;
+    padding: 20px;
     background-color: #0f1111;
     border-bottom: 3px solid #fff;
     box-shadow: 0 1px 4px 0 rgba(0, 0, 0, .1);
-    display:flex;
+    display: flex;
     justify-content: space-between;
+    align-items: center;
+    position: relative;
+    flex-wrap: wrap; /* Flex-wrap to handle layout on smaller screens */
 }
 
-.links{
+.links {
     color: #cccccc;
     font-size: 1rem;
     margin-left: 15px;
     border: 1.5px solid transparent;
+    transition: all 0.3s ease;
 }
 
-.links:hover{
+.links:hover {
     border: 1.5px solid white;
+    transform: scale(1.05);
 }
 
-
-.catContainer {
-    box-shadow: 0 1px 4px 0 rgba(0, 0, 0, .1);
-    padding: 8px 20px;
-
-}
-
-.pr3:hover{
-    color: black;
-}
-
-
-.mt-3 {
-    display: inline-block;
-    margin-top: 10px;
-}
-
+/* Search bar and button styles */
 .search {
     margin-left: 80px;
     outline: none;
     padding-left: 10px;
-    width: 400px;
-    height: 44px;
+    width: 350px;
+    height: 40px;
     border: 2px solid #002f34;
     border-radius: 4px 0px 0px 4px;
-    border: 1.5px solid transparent;
+    transition: all 0.3s ease;
+    background-color: white;
+}
+
+.search:focus {
+    border-color: #007bff;
 }
 
 .searchBtn {
-    height: 44px;
+    height: 40px;
     background-color: #002f34;
     color: #fff;
     border-radius: 0px 4px 4px 0px;
@@ -57,27 +49,115 @@
     border: none;
     padding: 0px 15px;
     border: 1.5px solid transparent;
-}
-
-.logoutBtn {
-    height: 45px;
-    align-items: center;
-    border: 1.5px solid transparent;
-    background-color: #002f34;
-    color: #fff;
-    border-radius: 4px;
-    outline: none;
-    border: none;
-    padding: 1px 16px;
-    margin-right: 0px;
-}
-
-.logoutBtn:hover{
-    border: 1.5px solid white;
-}
-
-.category {
-    color: rgba(0, 47, 52, 1);
-    padding: 7px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.searchBtn:hover {
+    background-color: #007bff;
+}
+
+/* User icon and popup styling */
+.userIcon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #002f34;
+    width: 40px;
+    height: 40px;
+    color: #fff;
+    font-size: 14px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.dropdown {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    background-color: #002f34;
+    padding: 10px;
+    border-radius: 5px;
+    z-index: 100;
+}
+
+.loginBtn {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.loginBtn:hover {
+    background-color: #0056b3;
+}
+
+/* Signup button placed at the bottom of the black bar */
+.signup {
+    position: absolute;
+    bottom: 10px;
+    right: 20px;
+}
+
+.signupBtn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.signupBtn:hover {
+    background-color: #45a049;
+}
+
+/* Responsive styles */
+@media (max-width: 1024px) {
+    .headerContainer {
+        padding: 15px;
+    }
+
+    .search {
+        width: 250px; /* Reduce width on tablets */
+        margin-left: 0;
+    }
+
+    .searchBtn {
+        padding: 0 10px;
+    }
+}
+
+@media (max-width: 768px) {
+    .headerContainer {
+        flex-direction: column; /* Stack elements vertically on smaller screens */
+        align-items: center;
+    }
+
+    .search {
+        width: 200px; /* Smaller width on phones */
+        margin-left: 0;
+    }
+
+    .searchBtn {
+        width: 50px;
+        height: 40px;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .signup {
+        position: static; /* Adjust signup position on smaller screens */
+        margin-top: 10px;
+    }
+
+    .userIcon {
+        margin-top: 10px;
+    }
 }
