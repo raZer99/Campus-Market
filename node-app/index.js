@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const productController = require('./controllers/productController');
 const userController = require('./controllers/userController');
-require('dotenv').config(); // Add this line to load environment variables
+// require('dotenv').config(); // Add this line to load environment variables
 
 const app = express();
 
@@ -28,9 +28,15 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-
-
+require('dotenv').config();
+console.log(process.env.MONGODB_USERNAME, process.env.MONGODB_PASSWORD);
 const mongoURI = `mongodb+srv://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@cluster0.ipzfb.mongodb.net/`;
+
+
+// const mongoURI = `mongodb+srv://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@cluster0.ipzfb.mongodb.net/`;
+
+
+// const mongoURI = `mongodb+srv://razer:1296@cluster0.ipzfb.mongodb.net/`;
 
 
 
